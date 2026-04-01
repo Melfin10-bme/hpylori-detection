@@ -1,0 +1,10 @@
+{
+  "name": "h-pylori-detection-system",
+  "version": "1.0.0",
+  "description": "H. pylori Detection System",
+  "scripts": {
+    "build": "cd frontend && npm run build"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
