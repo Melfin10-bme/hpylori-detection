@@ -7,5 +7,7 @@ services:
     envVars:
       - key: FRONTEND_URL
         value: https://your-app.netlify.app
+      - key: SECRET_KEY
+        value: 535153b8cb28a2967190a1d360122d8d24cb300555c69a6436a976d00e848232
     plan: free
     autoDeploy: true
