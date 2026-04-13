@@ -2,7 +2,7 @@
 H. pylori Detection System - FastAPI Backend
 """
 
-from fastapi import FastAPI, HTTPException, UploadFile, File, Header
+from fastapi import FastAPI, HTTPException, UploadFile, File, Header, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
@@ -1512,11 +1512,16 @@ def generate_patient_token(patient_id: str) -> str:
     return hashlib.sha256(data.encode()).hexdigest()[:16]
 
 @app.get("/api/qrcode/patient/{patient_id}", response_model=QRCodeResponse)
-def generate_patient_qr(patient_id: str):
+def generate_patient_qr(patient_id: str, request: Request = None):
     """Generate QR code for patient ID with secure token"""
     import time
+    # Get the base URL dynamically from request
+    base_url = FRONTEND_URL
+    if request:
+        base_url = str(request.base_url).rstrip('/')
+
     # Check cache first
-    cache_key = f"patient_{patient_id}"
+    cache_key = f"patient_{patient_id}_{base_url}"
     if cache_key in qr_code_cache:
         cached_data, cached_time = qr_code_cache[cache_key]
         if time.time() - cached_time < QR_CACHE_TTL:
@@ -1536,7 +1541,7 @@ def generate_patient_qr(patient_id: str):
 
     qr = qrcode.QRCode(version=None, box_size=6, border=2, error_correction=qrcode.constants.ERROR_CORRECT_L)
     # Use /scan route with token for secure access
-    qr.add_data(f"{FRONTEND_URL}/scan/{patient_id}?token={patient_token}")
+    qr.add_data(f"{base_url}/scan/{patient_id}?token={patient_token}")
     qr.make(fit=True)
 
     img = qr.make_image(fill_color="black", back_color="white")
@@ -1551,11 +1556,16 @@ def generate_patient_qr(patient_id: str):
     return QRCodeResponse(qrCode=qr_code_data)
 
 @app.get("/api/qrcode/test/{test_id}", response_model=QRCodeResponse)
-def generate_test_qr(test_id: str):
+def generate_test_qr(test_id: str, request: Request = None):
     """Generate QR code for test ID with secure token"""
     import time
+    # Get the base URL dynamically from request
+    base_url = FRONTEND_URL
+    if request:
+        base_url = str(request.base_url).rstrip('/')
+
     # Check cache first
-    cache_key = f"test_{test_id}"
+    cache_key = f"test_{test_id}_{base_url}"
     if cache_key in qr_code_cache:
         cached_data, cached_time = qr_code_cache[cache_key]
         if time.time() - cached_time < QR_CACHE_TTL:
@@ -1572,9 +1582,9 @@ def generate_test_qr(test_id: str):
                 patient['scanToken'] = patient_token
                 patients_db[test['patientId']] = patient
         # Use /scan route with token
-        qr.add_data(f"{FRONTEND_URL}/scan/{test['patientId']}/{test_id}?token={patient_token}")
+        qr.add_data(f"{base_url}/scan/{test['patientId']}/{test_id}?token={patient_token}")
     else:
-        qr.add_data(f"{FRONTEND_URL}/scan")
+        qr.add_data(f"{base_url}/scan")
     qr.make(fit=True)
 
     img = qr.make_image(fill_color="black", back_color="white")
