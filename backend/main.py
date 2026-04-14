@@ -1522,10 +1522,8 @@ def generate_patient_token(patient_id: str) -> str:
 def generate_patient_qr(patient_id: str, request: Request = None):
     """Generate QR code for patient ID with secure token"""
     import time
-    # Get the base URL dynamically from request
+    # Always use FRONTEND_URL from environment
     base_url = FRONTEND_URL
-    if request:
-        base_url = str(request.base_url).rstrip('/')
 
     # Check cache first
     cache_key = f"patient_{patient_id}_{base_url}"
@@ -1566,10 +1564,8 @@ def generate_patient_qr(patient_id: str, request: Request = None):
 def generate_test_qr(test_id: str, request: Request = None):
     """Generate QR code for test ID with secure token"""
     import time
-    # Get the base URL dynamically from request
+    # Always use FRONTEND_URL from environment
     base_url = FRONTEND_URL
-    if request:
-        base_url = str(request.base_url).rstrip('/')
 
     # Check cache first
     cache_key = f"test_{test_id}_{base_url}"

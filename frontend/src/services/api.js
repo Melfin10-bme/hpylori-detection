@@ -1,4 +1,5 @@
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+// Use Render URL in production, localhost in development
+const API_BASE = import.meta.env.VITE_API_URL || 'https://project-5-wkps.onrender.com/api';
 
 // Helper function for making API requests
 async function request(endpoint, options = {}) {
